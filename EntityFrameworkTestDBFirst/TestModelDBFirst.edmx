@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="TestDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="EncCells">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Issuer3Id" Type="int" Nullable="false" />
+          <Property Name="CellName" Type="varchar" MaxLength="8" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="4000" />
+          <Property Name="IsForSale" Type="bit" />
+          <Property Name="Discriminator" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="issuers">
+          <Key>
+            <PropertyRef Name="_Id" />
+          </Key>
+          <Property Name="_Id" Type="int" Nullable="false" />
+          <Property Name="_Issuer" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="_IssuerShortName" Type="varchar" MaxLength="10" />
+          <Property Name="_Active" Type="bit" Nullable="false" />
+          <Property Name="Discriminator" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <Association Name="FK_EncCells_issuers">
+          <End Role="issuers" Type="Self.issuers" Multiplicity="1" />
+          <End Role="EncCells" Type="Self.EncCells" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="issuers">
+              <PropertyRef Name="_Id" />
+            </Principal>
+            <Dependent Role="EncCells">
+              <PropertyRef Name="Issuer3Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TestDBModelStoreContainer">
+          <EntitySet Name="EncCells" EntityType="Self.EncCells" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="issuers" EntityType="Self.issuers" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_EncCells_issuers" Association="Self.FK_EncCells_issuers">
+            <End Role="issuers" EntitySet="issuers" />
+            <End Role="EncCells" EntitySet="EncCells" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TestDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="EncCell">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Issuer3Id" Type="Int32" Nullable="false" />
+          <Property Name="CellName" Type="String" MaxLength="8" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="IsForSale" Type="Boolean" />
+          <NavigationProperty Name="issuer" Relationship="Self.FK_EncCells_issuers" FromRole="EncCells" ToRole="issuers" />
+        </EntityType>
+        <EntityType Name="issuer">
+          <Key>
+            <PropertyRef Name="C_Id" />
+          </Key>
+          <Property Name="C_Id" Type="Int32" Nullable="false" />
+          <Property Name="C_Issuer" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="C_IssuerShortName" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="C_Active" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="EncCells" Relationship="Self.FK_EncCells_issuers" FromRole="issuers" ToRole="EncCells" />
+        </EntityType>
+        <Association Name="FK_EncCells_issuers">
+          <End Role="issuers" Type="Self.issuer" Multiplicity="1" />
+          <End Role="EncCells" Type="Self.EncCell" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="issuers">
+              <PropertyRef Name="C_Id" />
+            </Principal>
+            <Dependent Role="EncCells">
+              <PropertyRef Name="Issuer3Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TestDBFirst" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="EncCells" EntityType="Self.EncCell" />
+          <EntitySet Name="issuers" EntityType="Self.issuer" />
+          <AssociationSet Name="FK_EncCells_issuers" Association="Self.FK_EncCells_issuers">
+            <End Role="issuers" EntitySet="issuers" />
+            <End Role="EncCells" EntitySet="EncCells" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TestDBModelStoreContainer" CdmEntityContainer="TestDBFirst">
+          <EntitySetMapping Name="EncCells">
+            <EntityTypeMapping TypeName="TestDBModel.EncCell">
+              <MappingFragment StoreEntitySet="EncCells">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Issuer3Id" ColumnName="Issuer3Id" />
+                <ScalarProperty Name="CellName" ColumnName="CellName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsForSale" ColumnName="IsForSale" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="issuers">
+            <EntityTypeMapping TypeName="TestDBModel.issuer">
+              <MappingFragment StoreEntitySet="issuers">
+                <ScalarProperty Name="C_Id" ColumnName="_Id" />
+                <ScalarProperty Name="C_Issuer" ColumnName="_Issuer" />
+                <ScalarProperty Name="C_IssuerShortName" ColumnName="_IssuerShortName" />
+                <ScalarProperty Name="C_Active" ColumnName="_Active" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="true" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
